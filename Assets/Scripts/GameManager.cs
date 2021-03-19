@@ -52,16 +52,16 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
+
         GameStatus = 1;
         FirstClick = true;
+
         SetKeyNum();
-        
         SetBomb();
-        anim = bomb.GetComponent<Animator>();
-
         SetMinMaxNum(DataManager.Instance.MinValue, DataManager.Instance.MaxValue);
-        
 
+        anim = bomb.GetComponent<Animator>();
         //清空玩家输入框
         playerNum_t = GameObject.Find("Canvas/Hud/InputNumBg/InputValue").GetComponent<Text>();
         playerNum_t.text = "";
@@ -83,6 +83,7 @@ public class GameManager : MonoBehaviour
         string btnName;
         btnName = EventSystem.current.currentSelectedGameObject.GetComponent<Button>().name;
         playerNum_t = GameObject.Find("Canvas/Hud/InputNumBg/InputValue").GetComponent<Text>();
+        SoundManager.PlayClickClip();
         if (FirstClick == true)
         {
             if (playerNum_t.text != "")
@@ -184,6 +185,8 @@ public class GameManager : MonoBehaviour
 
     public void Pop()
     {
+        //暂停播放背景音乐
+        SoundManager.PausebgmClip();
         //弹出消息窗口，暂停游戏时间
         MessageBoxUI.SetActive(true);
         Time.timeScale = 0.0f;
@@ -203,24 +206,26 @@ public class GameManager : MonoBehaviour
     }
 
     public void Resume()
-    {//恢复暂停的游戏
-     //关闭消息窗口，恢复游戏时间
-        if (GameStatus == 0)
-        {
-            MessageBoxUI.SetActive(false);
-            SetBomb();
-            Time.timeScale = 1.0f;
-            GameStatus = 1;
-        }
+    {
+        SoundManager.PlaybgmClip();
+        //恢复暂停的游戏
+        //关闭消息窗口，恢复游戏时间
+        MessageBoxUI.SetActive(false);
+        SetBomb();
+        Time.timeScale = 1.0f;
+        GameStatus = 1;
+     
     }
 
     public void Restart()
     {
+        SoundManager.PlayClickClip();
+        SoundManager.PlaybgmClip();
+
         //关闭消息窗口，恢复游戏时间
         MessageBoxUI.SetActive(false);
         Time.timeScale = 1.0f;
         GameStatus = 1;
-
         SceneManager.LoadScene(1);
     }
 
@@ -240,8 +245,9 @@ public class GameManager : MonoBehaviour
          * 判断动画播放结束
          * 弹出消息窗口，暂停游戏时间    
          */
-        Invoke(nameof(Explode), 0.0f);
         GameStatus = -1;
+        SoundManager.PlayBombExplodeClip();
+        Invoke(nameof(Explode), 0.0f);
         Invoke(nameof(DestroyBomb), 1f); 
         Invoke(nameof(Pop), 2f);
              
@@ -251,6 +257,7 @@ public class GameManager : MonoBehaviour
         //返回至主菜单，恢复被暂停的游戏时间
         GameStatus = 1;
         Time.timeScale = 1.0f;
+        SoundManager.PlayClickClip();
         SceneManager.LoadScene(0);
     }
 }

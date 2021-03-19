@@ -19,6 +19,7 @@ public class MainMenu : MonoBehaviour
         text_p = GameObject.Find("Canvas/MainMenu/Text_MaxValue/Placeholder").GetComponent<Text>();
         text_t.text = DataManager.Instance.MaxValue.ToString();
         text_p.text = DataManager.Instance.MaxValue.ToString();
+
     }
     public void PlayGame()
     {   //切换至开始游戏
@@ -39,12 +40,14 @@ public class MainMenu : MonoBehaviour
             text_t.text = "输入了负数";
             return;
         }
+        SoundManager.PlayClickClip();
         SceneManager.LoadScene(1);
                
     }
 
     public void QuitGame()
     {//退出游戏
+        SoundManager.PlayClickClip();
         Application.Quit();
     }
 
